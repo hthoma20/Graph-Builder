@@ -37,6 +37,13 @@ public class GraphPanel extends JPanel {
         for(Vertex v : graph.getVertexSet()){
             fillCircle(v.getX(),v.getY(),vRad,g);
         }
+
+        paintInfo(g);
+    }
+
+    private void paintInfo(Graphics g){
+        g.drawString("p= " + graph.getVertexSet().size(), 20, 20);
+        g.drawString("q= " + graph.getEdgeSet().size(), 20, 38);
     }
 
     private void fillCircle(int x, int y, int rad, Graphics g){

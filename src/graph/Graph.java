@@ -16,6 +16,13 @@ public class Graph {
     }
 
     public boolean addEdge(Edge e){
+        //check if the edge already exists
+        for(Edge edge : edgeSet){
+            if(e.equals(edge)){
+                return false;
+            }
+        }
+
         return edgeSet.add(e);
     }
 

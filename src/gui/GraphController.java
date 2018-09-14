@@ -6,8 +6,10 @@ import graph.Vertex;
 
 import java.awt.event.*;
 
-public class GraphController implements MouseListener, MouseMotionListener, KeyListener {
+public class GraphController implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
     private GraphPanel panel;
+    private ControlPanel controls;
+
     private Graph graph;
 
     private Vertex selectedVertex= null;
@@ -15,12 +17,14 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     private EditMode mode;
 
-    public GraphController(GraphPanel panel){
+    public GraphController(GraphPanel panel, ControlPanel controls){
         this.panel= panel;
+        this.controls= controls;
         this.graph= panel.getGraph();
 
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
+        controls.setActionListener(this);
 
         this.mode= EditMode.VERTEX;
     }
@@ -33,8 +37,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
                 break;
             case EDGE:
                 selectVertex(e.getX(),e.getY());
-                workingEdge= new WorkingEdge(selectedVertex,e.getX(),e.getY());
-                panel.setWorkingEdge(workingEdge);
+                moveWorkingEdge(e.getX(),e.getY());
                 break;
         }
     }
@@ -50,9 +53,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
                 break;
             case EDGE:
                 addEdge(e.getX(),e.getY());
-                workingEdge= null;
-                panel.setWorkingEdge(workingEdge);
-                panel.repaint();
+                removeWorkingEdge();
                 break;
         }
     }
@@ -64,8 +65,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
                 moveSelectedVertex(e.getX(),e.getY());
                 break;
             case EDGE:
-                workingEdge.moveTo(e.getX(),e.getY());
-                panel.repaint();
+                moveWorkingEdge(e.getX(),e.getY());
                 break;
         }
     }
@@ -84,7 +84,39 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
                 break;
         }
 
-        System.out.println(mode.toString());
+        controls.setSelectedMode(this.mode);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        EditMode newMode= EditMode.stringToMode(e.getActionCommand());
+
+        if(newMode == null){
+            System.err.println("Unknown action fired to GraphController.actionPerformed");
+            return;
+        }
+
+        this.mode= newMode;
+        controls.setSelectedMode(this.mode);
+    }
+
+    private void moveWorkingEdge(int x, int y){
+        if(selectedVertex == null) return;
+        if(workingEdge == null){
+            workingEdge= new WorkingEdge(selectedVertex,x,y);
+            panel.setWorkingEdge(workingEdge);
+        }
+        else{
+            workingEdge.moveTo(x,y);
+        }
+
+        panel.repaint();
+    }
+
+    private void removeWorkingEdge(){
+        workingEdge= null;
+        panel.setWorkingEdge(null);
+        panel.repaint();
     }
 
     private void moveSelectedVertex(int x, int y){
@@ -133,11 +165,20 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         return null;
     }
 
-
     public enum EditMode{
         VERTEX,
         EDGE,
         DRAG;
+
+        public static EditMode stringToMode(String str){
+            for(EditMode mode : EditMode.values()){
+                if(mode.toString().equals(str)){
+                    return mode;
+                }
+            }
+
+            return null;
+        }
     }
 
     /*
