@@ -31,6 +31,22 @@ public class Edge {
         return false;
     }
 
+    public boolean isAdjacent(Vertex v){
+        return v == v1 || v == v2;
+    }
+
+    /**
+     *
+     * @param v the vertex to find its pair
+     * @return the vertex that this edge links to v
+     *          or null if v is not adjacent to this edge
+     */
+    public Vertex getAdjacent(Vertex v){
+        if(v == this.v1) return v2;
+        if(v == this.v2) return v1;
+        return null;
+    }
+
     public boolean equals(Vertex v1, Vertex v2){
         return this.equals(new Edge(v1,v2));
     }

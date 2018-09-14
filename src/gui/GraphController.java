@@ -3,6 +3,7 @@ package gui;
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
+import gui.GraphPanel;
 
 import java.awt.event.*;
 
@@ -27,6 +28,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         controls.setActionListener(this);
 
         this.mode= EditMode.VERTEX;
+        controls.setSelectedMode(mode);
     }
 
     @Override
@@ -55,6 +57,9 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
                 addEdge(e.getX(),e.getY());
                 removeWorkingEdge();
                 break;
+            case REMOVE:
+                removeVertex(e.getX(),e.getY());
+                break;
         }
     }
 
@@ -74,30 +79,34 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
     public void keyTyped(KeyEvent e) {
         switch(e.getKeyChar()){
             case 'v':
-                mode= EditMode.VERTEX;
+                setMode(EditMode.VERTEX);
                 break;
             case 'e':
-                mode= EditMode.EDGE;
+                setMode(EditMode.EDGE);
                 break;
             case 'd':
-                mode= EditMode.DRAG;
+                setMode(EditMode.DRAG);
+                break;
+            case 'r':
+                setMode(EditMode.REMOVE);
                 break;
         }
-
-        controls.setSelectedMode(this.mode);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         EditMode newMode= EditMode.stringToMode(e.getActionCommand());
-
         if(newMode == null){
             System.err.println("Unknown action fired to GraphController.actionPerformed");
             return;
         }
 
-        this.mode= newMode;
-        controls.setSelectedMode(this.mode);
+        setMode(newMode);
+    }
+
+    private void setMode(EditMode mode){
+        this.mode= mode;
+        controls.setSelectedMode(mode);
     }
 
     private void moveWorkingEdge(int x, int y){
@@ -131,6 +140,11 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     private void addVertex(int x, int y){
         graph.addVertex(new Vertex(x,y));
+        panel.repaint();
+    }
+
+    private void removeVertex(int x, int y){
+        graph.removeVertex(vertexAt(x,y));
         panel.repaint();
     }
 
@@ -168,7 +182,8 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
     public enum EditMode{
         VERTEX,
         EDGE,
-        DRAG;
+        DRAG,
+        REMOVE;
 
         public static EditMode stringToMode(String str){
             for(EditMode mode : EditMode.values()){

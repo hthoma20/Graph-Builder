@@ -3,31 +3,20 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 public class ControlPanel extends JPanel {
     private JButton selectedMode;
 
-    private JButton vertexModeButton;
-    private JButton edgeModeButton;
-    private JButton dragModeButton;
-
-    private HashMap<GraphController.EditMode,JButton> modeButtonMap;
+    private Map<GraphController.EditMode,JButton> modeButtonMap;
 
     public ControlPanel(){
         setupModeButtons();
-        createModeButtonMap();
     }
 
     private void setupModeButtons(){
-        //create buttons
-        this.vertexModeButton= new JButton("add (V)ertex");
-        this.edgeModeButton= new JButton("add (E)dge");
-        this.dragModeButton= new JButton("(D)rag vertex");
-
-        //add buttons to mode map
+        //create buttons and add buttons to mode map
         createModeButtonMap();
 
         //set action commands
@@ -39,17 +28,14 @@ public class ControlPanel extends JPanel {
             modeButton.setFocusable(false);
             this.add(modeButton);
         }
-
-        //select vertex mode by default
-        selectedMode= vertexModeButton;
-        borderSelectedMode();
     }
 
     private void createModeButtonMap(){
-        this.modeButtonMap= new HashMap<>(3);
-        modeButtonMap.put(GraphController.EditMode.DRAG,dragModeButton);
-        modeButtonMap.put(GraphController.EditMode.VERTEX,vertexModeButton);
-        modeButtonMap.put(GraphController.EditMode.EDGE,edgeModeButton);
+        this.modeButtonMap= new LinkedHashMap<>(4);
+        modeButtonMap.put(GraphController.EditMode.VERTEX, new JButton("add (V)ertex"));
+        modeButtonMap.put(GraphController.EditMode.EDGE, new JButton("add (E)dge"));
+        modeButtonMap.put(GraphController.EditMode.DRAG, new JButton("(D)rag vertex"));
+        modeButtonMap.put(GraphController.EditMode.REMOVE, new JButton("(R)emove element"));
     }
 
     public void setActionListener(ActionListener listener){
@@ -60,7 +46,6 @@ public class ControlPanel extends JPanel {
 
     public void setSelectedMode(GraphController.EditMode mode){
         selectedMode= modeButtonMap.get(mode);
-
         borderSelectedMode();
     }
 
@@ -70,6 +55,8 @@ public class ControlPanel extends JPanel {
                 b.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             }
         }
-        selectedMode.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        if(selectedMode != null){
+            selectedMode.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        }
     }
 }
