@@ -12,7 +12,9 @@ import java.util.Map;
 
 public class GraphPanel extends JPanel {
     private Graph graph;
+
     private int vRad;
+    private boolean doColor;
 
     private WorkingEdge workingEdge= null;
 
@@ -22,6 +24,7 @@ public class GraphPanel extends JPanel {
         super();
         this.graph= graph;
         this.vRad= 10;
+        this.doColor= false;
 
         setupColorMap();
     }
@@ -76,6 +79,10 @@ public class GraphPanel extends JPanel {
     }
 
     private Color intToColor(int x){
+        if(!doColor){
+            return Color.BLACK;
+        }
+
         if(colorMap.containsKey(x)){
             return colorMap.get(x);
         }
@@ -132,6 +139,11 @@ public class GraphPanel extends JPanel {
 
     public void setVRad(int vRad) {
         this.vRad = vRad;
+    }
+
+    public void setDoColor(boolean doColor){
+        this.doColor= doColor;
+        repaint();
     }
 
     public void setWorkingEdge(WorkingEdge workingEdge) {

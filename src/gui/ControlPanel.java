@@ -11,23 +11,39 @@ public class ControlPanel extends JPanel {
 
     private Map<GraphController.EditMode,JButton> modeButtonMap;
 
+    private JCheckBox colorCheckBox;
+
     public ControlPanel(){
-        setupModeButtons();
+        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+
+        add(setupModeButtons());
+        add(setupColorCheckBox());
     }
 
-    private void setupModeButtons(){
+    private Container setupModeButtons(){
+        JPanel panel= new JPanel(new GridBagLayout());
         //create buttons and add buttons to mode map
         createModeButtonMap();
 
         //set action commands
         //disallow focus for buttons
-        //and add the buttons to the panel
         for(GraphController.EditMode mode : modeButtonMap.keySet()){
             JButton modeButton= modeButtonMap.get(mode);
             modeButton.setActionCommand(mode.toString());
             modeButton.setFocusable(false);
-            this.add(modeButton);
+
         }
+
+        //and add the buttons to the panel
+        GridBagConstraints c= new GridBagConstraints();
+        c.insets= new Insets(0,3,0,3);
+        c.gridx= 0;
+        for(JButton modeButton : modeButtonMap.values()){
+            panel.add(modeButton,c);
+            c.gridx++;
+        }
+
+        return panel;
     }
 
     private void createModeButtonMap(){
@@ -38,10 +54,22 @@ public class ControlPanel extends JPanel {
         modeButtonMap.put(GraphController.EditMode.REMOVE, new JButton("(R)emove element"));
     }
 
-    public void setActionListener(ActionListener listener){
+    private Box setupColorCheckBox(){
+        Box box= new Box(BoxLayout.X_AXIS);
+        this.colorCheckBox= new JCheckBox("Vertex Coloring");
+        colorCheckBox.setActionCommand("colorCheckBox");
+        colorCheckBox.setFocusable(false);
+        box.add(colorCheckBox);
+
+        return box;
+    }
+
+    public void addActionListener(ActionListener listener){
         for(JButton b : modeButtonMap.values()){
             b.addActionListener(listener);
         }
+
+        colorCheckBox.addActionListener(listener);
     }
 
     public void setSelectedMode(GraphController.EditMode mode){
@@ -58,5 +86,9 @@ public class ControlPanel extends JPanel {
         if(selectedMode != null){
             selectedMode.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         }
+    }
+
+    public boolean colorCheckBoxChecked(){
+        return colorCheckBox.isSelected();
     }
 }

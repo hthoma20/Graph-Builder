@@ -3,7 +3,6 @@ package gui;
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
-import gui.GraphPanel;
 
 import java.awt.event.*;
 
@@ -25,7 +24,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
-        controls.setActionListener(this);
+        controls.addActionListener(this);
 
         this.mode= EditMode.VERTEX;
         controls.setSelectedMode(mode);
@@ -95,7 +94,13 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        EditMode newMode= EditMode.stringToMode(e.getActionCommand());
+        String command= e.getActionCommand();
+        if(command.equals("colorCheckBox")){
+            panel.setDoColor(controls.colorCheckBoxChecked());
+            return;
+        }
+
+        EditMode newMode= EditMode.stringToMode(command);
         if(newMode == null){
             System.err.println("Unknown action fired to GraphController.actionPerformed");
             return;
