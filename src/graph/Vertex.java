@@ -9,6 +9,13 @@ public class Vertex {
         this.y= y;
     }
 
+    /**
+     * @return a deep copy of this vertex
+     */
+    public Vertex copy(){
+        return new Vertex(this.x, this.y);
+    }
+
     public void moveTo(int x, int y){
         this.x= x;
         this.y= y;

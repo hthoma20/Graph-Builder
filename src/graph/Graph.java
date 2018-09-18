@@ -23,6 +23,47 @@ public class Graph {
         this.degreeSequence= new DegreeSequence(degrees);
     }
 
+    /**
+     * @return a deep copy of this graph
+     */
+    public Graph copy(){
+        Graph g= new Graph();
+
+        //establish a mapping from this graphs vertex to
+        //g's vertexes
+        HashMap<Vertex, Vertex> vertexMap= new HashMap<>(this.vertexSet.size());
+
+        //create copies of each vertex in this graph
+        //add them to the mapping
+        for(Vertex thisV : this.vertexSet){
+            Vertex gV= thisV.copy();
+            g.vertexSet.add(gV);
+            vertexMap.put(thisV, gV);
+        }
+
+        //create copies of the edges
+        //using the mapping to preseve adjacency
+        for(Edge thisE : this.edgeSet){
+            Edge gE= new Edge(vertexMap.get(thisE.getV1()),vertexMap.get(thisE.getV2()));
+            g.edgeSet.add(gE);
+        }
+
+        //copy the coloring map using the vertex map
+        for(Vertex thisV : this.coloring.keySet()){
+            g.coloring.put(vertexMap.get(thisV),this.coloring.get(thisV));
+        }
+
+        //copy the degree map using the vertex map
+        for(Vertex thisV : this.degrees.keySet()){
+            g.degrees.put(vertexMap.get(thisV), this.degrees.get(thisV));
+        }
+
+        //create a degree sequence for g wit the degree map we just made
+        g.degreeSequence= new DegreeSequence(g.degrees);
+
+        return g;
+    }
+
     public boolean addVertex(Vertex v){
         boolean added= vertexSet.add(v);
         if(!added) return false;
@@ -84,6 +125,14 @@ public class Graph {
         this.coloring= createColoring();
 
         return true;
+    }
+
+    public void clear(){
+        Vertex[] allVertexes= vertexSet.toArray(new Vertex[0]);
+
+        for(Vertex v : allVertexes){
+            removeVertex(v);
+        }
     }
 
     /**

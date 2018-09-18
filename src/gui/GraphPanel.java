@@ -18,6 +18,7 @@ public class GraphPanel extends JPanel {
     private boolean doColor;
 
     private WorkingEdge workingEdge= null;
+    private LineSegment removeSegment= null;
 
     private Map<Integer,Color> colorMap;
 
@@ -43,6 +44,10 @@ public class GraphPanel extends JPanel {
 
         if(workingEdge != null){
             workingEdge.paint(g);
+        }
+        if(removeSegment != null){
+            g.setColor(Color.RED);
+            g.drawLine(removeSegment.getX1(),removeSegment.getY1(),removeSegment.getX2(),removeSegment.getY2());
         }
 
         Map<Vertex, Integer> coloring= graph.getColoring();
@@ -153,6 +158,10 @@ public class GraphPanel extends JPanel {
 
     public void setWorkingEdge(WorkingEdge workingEdge) {
         this.workingEdge = workingEdge;
+    }
+
+    public void setRemoveSegment(LineSegment removeSegment){
+        this.removeSegment= removeSegment;
     }
 
     public int getVRad() {

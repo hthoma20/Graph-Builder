@@ -64,6 +64,38 @@ public class LineSegment {
         return Math.abs(d1-d2) < 4*Math.ulp(d1);
     }
 
+    public void setP1(Point p1) {
+        this.p1 = p1;
+    }
+
+    public void setP2(Point p2) {
+        this.p2 = p2;
+    }
+
+    public Point getP1(){
+        return p1;
+    }
+
+    public Point getP2(){
+        return p2;
+    }
+
+    public int getX1(){
+        return p1.x;
+    }
+
+    public int getX2(){
+        return p2.x;
+    }
+
+    public int getY1(){
+        return p1.y;
+    }
+
+    public int getY2(){
+        return p2.y;
+    }
+
     public enum Orientation{
         CLOCKWISE,
         COUTERCLOCKWISE,
