@@ -1,5 +1,8 @@
 package graph;
 
+import util.DegreeSequence;
+import util.ObservableMap;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,9 +13,14 @@ public class Graph {
     private Set<Edge> edgeSet= new HashSet<>();
 
     private Map<Vertex, Integer> coloring;
+    private ObservableMap<Vertex, Integer> degrees;
+    private DegreeSequence degreeSequence;
 
     public Graph(){
+        this.degrees= new ObservableMap<>();
         this.coloring= createColoring();
+
+        this.degreeSequence= new DegreeSequence(degrees);
     }
 
     public boolean addVertex(Vertex v){
@@ -20,6 +28,7 @@ public class Graph {
         if(!added) return false;
 
         //this vertex should not be adjacent to anything yet
+        degrees.put(v,0);
         coloring.put(v,0);
 
         return true;
@@ -34,8 +43,11 @@ public class Graph {
         }
 
         boolean added= edgeSet.add(e);
-
         if(!added) return false;
+
+        //we added a degree to each veretx
+        this.degrees.put(e.getV1(),degrees.get(e.getV1())+1);
+        this.degrees.put(e.getV2(),degrees.get(e.getV2())+1);
 
         this.coloring= createColoring();
 
@@ -56,6 +68,7 @@ public class Graph {
         }
 
         edgeSet.removeAll(adjacentEdges);
+        this.degrees.remove(v);
         this.coloring= createColoring();
 
         return true;
@@ -92,8 +105,6 @@ public class Graph {
         return coloring;
     }
 
-
-
     /**
      *
      * @param v the vertex to find adjacencies for
@@ -121,5 +132,9 @@ public class Graph {
 
     public Map<Vertex,Integer> getColoring(){
         return coloring;
+    }
+
+    public DegreeSequence getDegreeSequence() {
+        return degreeSequence;
     }
 }

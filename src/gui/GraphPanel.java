@@ -58,6 +58,7 @@ public class GraphPanel extends JPanel {
     private void paintInfo(Graphics g){
         g.drawString("p= " + graph.getVertexSet().size(), 20, 20);
         g.drawString("q= " + graph.getEdgeSet().size(), 20, 38);
+        g.drawString(graph.getDegreeSequence().toString(), 20, 56);
     }
 
     private void fillCircle(int x, int y, int rad, Graphics g){
@@ -70,12 +71,15 @@ public class GraphPanel extends JPanel {
 
     private void setupColorMap(){
         this.colorMap= new HashMap<>();
-        this.colorMap.put(0, hColor(0));
-        this.colorMap.put(1, hColor(120));
-        this.colorMap.put(2, hColor(240));
-        this.colorMap.put(3, hColor(60));
-        this.colorMap.put(4, hColor(180));
-        this.colorMap.put(5, hColor(300));
+
+        int i= 0;
+        int angle;
+        do{
+            angle= 60*i;
+            colorMap.put(i,hColor(angle));
+            i++;
+
+        } while(angle < 360);
     }
 
     private Color intToColor(int x){

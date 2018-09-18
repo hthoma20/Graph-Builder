@@ -58,4 +58,12 @@ public class Edge {
     public Point getPoint2(){
         return new Point(v2.getX(),v2.getY());
     }
+
+    public Vertex getV1() {
+        return v1;
+    }
+
+    public Vertex getV2() {
+        return v2;
+    }
 }
