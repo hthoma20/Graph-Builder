@@ -3,7 +3,9 @@ package gui;
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
+import util.LineSegment;
 
+import java.awt.*;
 import java.awt.event.*;
 
 public class GraphController implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
@@ -14,6 +16,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     private Vertex selectedVertex= null;
     private WorkingEdge workingEdge= null;
+    public Point removePoint= null;
 
     private EditMode mode;
 
@@ -39,6 +42,9 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
             case EDGE:
                 selectVertex(e.getX(),e.getY());
                 moveWorkingEdge(e.getX(),e.getY());
+                break;
+            case REMOVE:
+                removePoint= e.getPoint();
                 break;
         }
     }
@@ -71,6 +77,9 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
             case EDGE:
                 moveWorkingEdge(e.getX(),e.getY());
                 break;
+            case REMOVE:
+                removeEdge(e.getPoint());
+                removePoint= e.getPoint();
         }
     }
 
@@ -136,6 +145,22 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
     private void moveSelectedVertex(int x, int y){
         if(selectedVertex == null) return;
         selectedVertex.moveTo(x,y);
+        panel.repaint();
+    }
+
+    /**
+     * remove the egde that intersects the line segment between
+     * p and remove point
+     * @param p the point to check with removePoint for edge removal
+     */
+    private void removeEdge(Point p){
+        for(Edge e : graph.getEdgeSet()){
+            if(e.getLineSegment().intersects(removePoint,p)){
+                graph.removeEdge(e);
+                return;
+            }
+        }
+
         panel.repaint();
     }
 

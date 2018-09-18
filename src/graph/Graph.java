@@ -74,6 +74,18 @@ public class Graph {
         return true;
     }
 
+    public boolean removeEdge(Edge e){
+        boolean removed= edgeSet.remove(e);
+
+        if(!removed) return false;
+
+        degrees.put(e.getV1(),degrees.get(e.getV1())-1);
+        degrees.put(e.getV2(),degrees.get(e.getV2())-1);
+        this.coloring= createColoring();
+
+        return true;
+    }
+
     /**
      * finds a vertex coloring of the graph, denoted with a map
      * from a vertex to an integer-encoded color

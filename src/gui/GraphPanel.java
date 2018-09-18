@@ -3,6 +3,7 @@ package gui;
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
+import util.LineSegment;
 
 import javax.swing.*;
 import java.awt.*;
