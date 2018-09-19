@@ -16,49 +16,20 @@ public class LineSegment {
     }
 
     public boolean intersects(LineSegment segment){
-        Orientation o1= orientation(p1,p2,segment.p1);
-        Orientation o2= orientation(p1,p2,segment.p2);
+        Line thisLine= new Line(this);
+        Line otherLine= new Line(segment);
 
-        if(o1 == o2){
-            return false;
-        }
+        //the other points must lie on opposite ends of thisLine
+        //and this' points must lie on opposite ends of otherLine
 
-        o1= orientation(segment.p1,segment.p2,p1);
-        o2= orientation(segment.p1,segment.p2,p2);
-
-        return o1 != o2;
+        return Math.signum(thisLine.compare(segment.p1)) == -Math.signum(thisLine.compare(segment.p2))
+                && Math.signum(otherLine.compare(p1)) == -Math.signum(otherLine.compare(p2));
     }
 
     public boolean intersects(Point p1, Point p2){
         return intersects(new LineSegment(p1,p2));
     }
 
-    public static Orientation orientation(Point p1, Point p2, Point p3){
-        int centerX= (p1.x+p2.x+p3.x)/3;
-        int centerY= (p1.y+p2.y+p3.y)/3;
-
-        //find angles from center point to each point
-        double theta1= Math.atan2(centerY - p1.y, centerX - p1.x);
-        double theta2= Math.atan2(centerY - p2.y, centerX - p2.x);
-        double theta3= Math.atan2(centerY - p3.y, centerX - p3.x);
-
-        //rotate points so p1 is at angle 0
-        theta2-= theta1;
-        theta2%= Math.PI*2;
-        theta3-= theta1;
-        theta3%= Math.PI*2;
-
-        double diff= theta3-theta2;
-
-        //if the diff is 0, theyre colinear
-        if(almostEqual(diff,0)){
-            return Orientation.COLINEAR;
-        }
-        if(diff > 0){
-            return Orientation.COUTERCLOCKWISE;
-        }
-        return Orientation.CLOCKWISE;
-    }
 
     public static boolean almostEqual(double d1, double d2){
         return Math.abs(d1-d2) < 4*Math.ulp(d1);
@@ -96,9 +67,36 @@ public class LineSegment {
         return p2.y;
     }
 
-    public enum Orientation{
-        CLOCKWISE,
-        COUTERCLOCKWISE,
-        COLINEAR;
+    public class Line{
+        double m; //slope of the line
+        double b; //y-intercept of the line
+
+        public Line(Point p1, Point p2){
+            double deltaY= p1.y-p2.y;
+            double deltaX= p1.x-p2.x;
+
+            m= deltaY/deltaX;
+            b= p1.y-m*p1.x;
+        }
+
+        public Line(LineSegment segment){
+            this(segment.p1,segment.p2);
+        }
+
+        public Line(double m, double b) {
+            this.m = m;
+            this.b = b;
+        }
+
+        /**
+         *
+         * @param p point to test
+         * @return  a negative value if the point is less than the line
+         *          a positive value if the point is greater than the line
+         *          0 if the point is on the line
+         */
+        public double compare(Point p){
+            return p.y - (m*p.x + b);
+        }
     }
 }

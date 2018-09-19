@@ -111,6 +111,10 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
             panel.setDoColor(controls.colorCheckBoxChecked());
             return;
         }
+        if(command.equals("degreeCheckBox")){
+            panel.setShowDegrees(controls.degreeCheckBoxChecked());
+            return;
+        }
 
         EditMode newMode= EditMode.stringToMode(command);
         if(newMode == null){
@@ -214,6 +218,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         if(selectedVertex == null) return;
         Vertex v2= vertexAt(x,y);
         if(v2 == null) return;
+        if(v2 == selectedVertex) return;
 
         graph.addEdge(new Edge(selectedVertex,v2));
         panel.repaint();

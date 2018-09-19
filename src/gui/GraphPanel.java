@@ -16,6 +16,7 @@ public class GraphPanel extends JPanel {
 
     private int vRad;
     private boolean doColor;
+    private boolean showDegrees;
 
     private WorkingEdge workingEdge= null;
     private LineSegment removeSegment= null;
@@ -27,6 +28,7 @@ public class GraphPanel extends JPanel {
         this.graph= graph;
         this.vRad= 10;
         this.doColor= false;
+        this.showDegrees= false;
 
         setupColorMap();
     }
@@ -59,6 +61,22 @@ public class GraphPanel extends JPanel {
 
         g.setColor(Color.BLACK);
         paintInfo(g);
+        if(showDegrees){
+            paintDegrees(g);
+        }
+    }
+
+    private void paintDegrees(Graphics g){
+        Map<Vertex, Integer> coloring= graph.getColoring();
+        for(Vertex v : graph.getVertexSet()){
+            Color vertexColor= intToColor(coloring.get(v));
+            int red= 255- vertexColor.getRed();
+            int green= 255- vertexColor.getGreen();
+            int blue= 255- vertexColor.getBlue();
+
+            g.setColor(new Color(red,green,blue));
+            g.drawString(""+graph.getDegree(v),v.getX()-vRad/3,v.getY()+vRad/4);
+        }
     }
 
     private void paintInfo(Graphics g){
@@ -153,6 +171,11 @@ public class GraphPanel extends JPanel {
 
     public void setDoColor(boolean doColor){
         this.doColor= doColor;
+        repaint();
+    }
+
+    public void setShowDegrees(boolean showDegrees) {
+        this.showDegrees = showDegrees;
         repaint();
     }
 

@@ -107,8 +107,10 @@ public class Graph {
                 adjacentEdges.add(e);
             }
         }
+        for(Edge e : adjacentEdges){
+            removeEdge(e);
+        }
 
-        edgeSet.removeAll(adjacentEdges);
         this.degrees.remove(v);
         this.coloring= createColoring();
 
@@ -197,5 +199,9 @@ public class Graph {
 
     public DegreeSequence getDegreeSequence() {
         return degreeSequence;
+    }
+
+    public int getDegree(Vertex v){
+        return degrees.get(v);
     }
 }

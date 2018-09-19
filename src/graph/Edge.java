@@ -9,6 +9,9 @@ public class Edge {
     private Vertex v2;
 
     public Edge(Vertex v1, Vertex v2){
+        if(v1 == v2){
+            throw new IllegalArgumentException("v1 cannot equal v2");
+        }
         this.v1= v1;
         this.v2= v2;
     }

@@ -12,12 +12,13 @@ public class ControlPanel extends JPanel {
     private Map<GraphController.EditMode,JButton> modeButtonMap;
 
     private JCheckBox colorCheckBox;
+    private JCheckBox degreeCheckBox;
 
     public ControlPanel(){
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
         add(setupModeButtons());
-        add(setupColorCheckBox());
+        add(setupCheckBoxes());
     }
 
     private Container setupModeButtons(){
@@ -54,12 +55,18 @@ public class ControlPanel extends JPanel {
         modeButtonMap.put(GraphController.EditMode.REMOVE, new JButton("(R)emove element"));
     }
 
-    private Box setupColorCheckBox(){
+    private Box setupCheckBoxes(){
         Box box= new Box(BoxLayout.X_AXIS);
+
         this.colorCheckBox= new JCheckBox("Vertex Coloring");
         colorCheckBox.setActionCommand("colorCheckBox");
         colorCheckBox.setFocusable(false);
         box.add(colorCheckBox);
+
+        this.degreeCheckBox= new JCheckBox("Degrees");
+        degreeCheckBox.setActionCommand("degreeCheckBox");
+        degreeCheckBox.setFocusable(false);
+        box.add(degreeCheckBox);
 
         return box;
     }
@@ -70,6 +77,7 @@ public class ControlPanel extends JPanel {
         }
 
         colorCheckBox.addActionListener(listener);
+        degreeCheckBox.addActionListener(listener);
     }
 
     public void setSelectedMode(GraphController.EditMode mode){
@@ -90,5 +98,9 @@ public class ControlPanel extends JPanel {
 
     public boolean colorCheckBoxChecked(){
         return colorCheckBox.isSelected();
+    }
+
+    public boolean degreeCheckBoxChecked(){
+        return degreeCheckBox.isSelected();
     }
 }
