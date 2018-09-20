@@ -187,6 +187,10 @@ public class GraphPanel extends JPanel {
         this.removeSegment= removeSegment;
     }
 
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
     public int getVRad() {
         return vRad;
     }

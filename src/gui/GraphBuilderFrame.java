@@ -1,12 +1,17 @@
 package gui;
 
 import graph.Graph;
+import graph.GraphFactory;
+import util.GraphReader;
+import util.GraphWriter;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class GraphBuilderFrame implements ActionListener {
     private JFrame frame;
@@ -14,6 +19,8 @@ public class GraphBuilderFrame implements ActionListener {
 
     private GraphPanel graphPanel;
     private ControlPanel controlPanel;
+
+    private GraphController controller;
 
     public static void main(String[] args){
         GraphBuilderFrame frame= new GraphBuilderFrame();
@@ -31,7 +38,7 @@ public class GraphBuilderFrame implements ActionListener {
         this.graphPanel= new GraphPanel(graph);
         this.controlPanel= new ControlPanel();
 
-        GraphController controller= new GraphController(graphPanel, controlPanel);
+        controller= new GraphController(graphPanel, controlPanel);
 
         frame.addKeyListener(controller);
 
@@ -99,6 +106,22 @@ public class GraphBuilderFrame implements ActionListener {
         c.gridx= 2;
         panel.add(clearButton,c);
 
+        JButton saveButton= new JButton("Save");
+        saveButton.setActionCommand("saveButton");
+        saveButton.addActionListener(this);
+        saveButton.setFocusable(false);
+
+        c.gridx= 3;
+        panel.add(saveButton,c);
+
+        JButton loadButton= new JButton("Load");
+        loadButton.setActionCommand("loadButton");
+        loadButton.addActionListener(this);
+        loadButton.setFocusable(false);
+
+        c.gridx= 4;
+        panel.add(loadButton,c);
+
         return panel;
     }
 
@@ -118,9 +141,14 @@ public class GraphBuilderFrame implements ActionListener {
             newFrame= new GraphBuilderFrame();
         }
         else if(command.equals("clearButton")){
-            System.out.println("Tyrna clear");
-            this.graph.clear();
-            graphPanel.repaint();
+            this.graph= new Graph();
+            controller.setGraph(graph);
+        }
+        else if(command.equals("saveButton")){
+            saveGraph();
+        }
+        else if(command.equals("loadButton")){
+            loadGraph();
         }
         else{
             System.err.println("Unknown action fired");
@@ -137,5 +165,51 @@ public class GraphBuilderFrame implements ActionListener {
             newFrame.frame.setLocation(location);
             newFrame.setVisible(true);
         }
+    }
+
+    private void saveGraph(){
+        File file= chooseFile();
+
+        if(file == null) {
+            return;
+        }
+        GraphWriter writer= new GraphWriter(file);
+        writer.writeGraph(graph);
+    }
+
+    private void loadGraph(){
+        File file= chooseFile();
+        if(file == null){
+            return;
+        }
+
+        GraphReader reader= new GraphReader(file);
+        Graph newGraph= reader.readGraph();
+
+        if(newGraph == null){
+            return;
+        }
+
+        this.graph= newGraph;
+        controller.setGraph(graph);
+    }
+
+    private File chooseFile(){
+        JFileChooser fileChooser= new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Graph Files", "gph");
+        fileChooser.setFileFilter(filter);
+
+        fileChooser.showOpenDialog(null);
+        File file= fileChooser.getSelectedFile();
+
+        if(file == null){
+            return null;
+        }
+        if(!file.getPath().endsWith(".gph")){
+            file= new File(file.getPath()+".gph");
+        }
+
+        return file;
     }
 }

@@ -240,6 +240,12 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         return null;
     }
 
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+        panel.setGraph(graph);
+        panel.repaint();
+    }
+
     public enum EditMode{
         VERTEX,
         EDGE,

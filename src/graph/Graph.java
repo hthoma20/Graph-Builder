@@ -83,6 +83,11 @@ public class Graph {
             }
         }
 
+        //check that each vertex is actually one of ours
+        if(!vertexSet.contains(e.getV1()) || !vertexSet.contains(e.getV2())){
+            return false;
+        }
+
         boolean added= edgeSet.add(e);
         if(!added) return false;
 
