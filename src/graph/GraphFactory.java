@@ -14,7 +14,7 @@ public class GraphFactory {
      * @return a graph with n-vertexes such that each vertex is adjacent to each
      *          other vertex
      */
-    public static Graph k(int n){
+    public static Graph complete(int n){
         if(n < 0){
             throw new IllegalArgumentException("n must be non-negative");
         }
@@ -88,6 +88,51 @@ public class GraphFactory {
     }
 
     /**
+     * creates a cycle of length n
+     *
+     * @param n number of vertexes and edges
+     * @return a cycle with n vertexes
+     */
+    public static Graph cycle(int n){
+        Graph graph= new Graph();
+
+        ArrayList<Vertex> vertexList= new ArrayList<>(n);
+
+        int center= GRAPHRAD+100;
+        for(int i=0;i<n;i++){
+            double angle= i*2*Math.PI/n;
+            double x= center + Math.cos(angle)*GRAPHRAD;
+            double y= center + Math.sin(angle)*GRAPHRAD;
+            Vertex v= new Vertex((int)x,(int)y);
+            vertexList.add(v);
+            graph.addVertex(v);
+        }
+
+        for(int i=1;i<vertexList.size();i++){
+            graph.addEdge(new Edge(vertexList.get(i),vertexList.get(i-1)));
+        }
+        graph.addEdge(new Edge(vertexList.get(0),vertexList.get(vertexList.size()-1)));
+
+        return graph;
+    }
+
+    /**
+     * creates a path of lenght n
+     *
+     * @param n number of edges in the path
+     * @return a path of length n
+     */
+    public static Graph path(int n){
+        //take a cycle and remove an edge
+
+        Graph graph= cycle(n+1);
+
+        graph.removeEdge(graph.getEdgeSet().toArray(new Edge[0])[0]);
+
+        return graph;
+    }
+
+    /**
      * creates a "random" graph with n vertexes
      *
      * @param n number of vertexes
@@ -97,7 +142,7 @@ public class GraphFactory {
      */
     public static Graph random(int n, double density){
         //create a K-n and potentially remove each edge
-        Graph graph= k(n);
+        Graph graph= complete(n);
 
         //figure out which edges to remove
         Set<Edge> removeEdges= new HashSet<>(n/2);

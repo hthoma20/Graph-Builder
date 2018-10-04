@@ -2,11 +2,9 @@ package graph;
 
 import util.DegreeSequence;
 import util.ObservableMap;
+import util.Permutor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Graph {
     private Set<Vertex> vertexSet= new HashSet<>();
@@ -149,13 +147,13 @@ public class Graph {
      *
      * @return a map from vertex to color
      */
-    public Map<Vertex,Integer> createColoring(){
+    private Map<Vertex,Integer> createColoring(List<Vertex> vertexList){
         Map<Vertex, Integer> coloring= new HashMap<>();
 
-        for(Vertex v : vertexSet){
+        for(Vertex v : vertexList){
             //find the smallest number availible
             //using an array of booleans to indicate whether the index has been seen
-            boolean[] colorSeen= new boolean[vertexSet.size()];
+            boolean[] colorSeen= new boolean[vertexList.size()];
             for(Vertex a : adjacencies(v)){
                 Integer color= coloring.get(a);
                 //if this vertex has no color yet, it does not affect min
@@ -171,6 +169,32 @@ public class Graph {
         }
 
         return coloring;
+    }
+
+    public Map<Vertex, Integer> createColoring(){
+        return createColoring( new ArrayList<>(vertexSet));
+    }
+
+    public int chromaticNumber(){
+        if(vertexSet.size() <= 1){
+            return vertexSet.size();
+        }
+
+        List<List<Vertex>> permutations= new Permutor<Vertex>(vertexSet).getPermutations();
+
+        int min= vertexSet.size();
+        for(List<Vertex> permutation : permutations){
+            Map<Vertex,Integer> coloring= createColoring(permutation);
+            int maxColor= 0;
+            for(Integer color : coloring.values()){
+                maxColor= Math.max(maxColor, color);
+            }
+
+            min= Math.min(min, maxColor);
+        }
+
+        //colors are indexed at 0, so if min color number is 3, coloring is 4
+        return min+1;
     }
 
     /**

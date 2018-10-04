@@ -25,6 +25,7 @@ public class GraphBuilderFrame implements ActionListener {
     public static void main(String[] args){
         GraphBuilderFrame frame= new GraphBuilderFrame();
         frame.setVisible(true);
+        //new BuilderWindow();
     }
 
     public GraphBuilderFrame(Graph graph){
@@ -122,6 +123,14 @@ public class GraphBuilderFrame implements ActionListener {
         c.gridx= 4;
         panel.add(loadButton,c);
 
+        JButton chromaticButton= new JButton("Chromatic Number");
+        chromaticButton.setActionCommand("chromaticButton");
+        chromaticButton.addActionListener(this);
+        chromaticButton.setFocusable(false);
+
+        c.gridx= 5;
+        panel.add(chromaticButton,c);
+
         return panel;
     }
 
@@ -150,6 +159,9 @@ public class GraphBuilderFrame implements ActionListener {
         else if(command.equals("loadButton")){
             loadGraph();
         }
+        else if(command.equals("chromaticButton")){
+            System.out.println(graph.chromaticNumber());
+        }
         else{
             System.err.println("Unknown action fired");
             return;
@@ -174,7 +186,8 @@ public class GraphBuilderFrame implements ActionListener {
             return;
         }
         GraphWriter writer= new GraphWriter(file);
-        writer.writeGraph(graph);
+        System.out.println(writer.writeGraph(graph));
+        System.out.println("Written");
     }
 
     private void loadGraph(){
