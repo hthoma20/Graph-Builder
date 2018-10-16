@@ -145,6 +145,8 @@ public class Graph {
      * from a vertex to an integer-encoded color
      * using integers [0,k-1] where k is the number of colors
      *
+     * @param vertexList the list of vertexes in the graph in the specified order
+     *                   it is required that each vertex in vertexList is in the graph
      * @return a map from vertex to color
      */
     private Map<Vertex,Integer> createColoring(List<Vertex> vertexList){
@@ -180,7 +182,7 @@ public class Graph {
             return vertexSet.size();
         }
 
-        List<List<Vertex>> permutations= new Permutor<Vertex>(vertexSet).getPermutations();
+        Permutor<Vertex> permutations= new Permutor<>(vertexSet);
 
         int min= vertexSet.size();
         for(List<Vertex> permutation : permutations){

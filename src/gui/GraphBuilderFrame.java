@@ -35,11 +35,10 @@ public class GraphBuilderFrame implements ActionListener {
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        controller= new GraphController(graph);
 
-        this.graphPanel= new GraphPanel(graph);
-        this.controlPanel= new ControlPanel();
-
-        controller= new GraphController(graphPanel, controlPanel);
+        this.graphPanel= controller.getGraphPanel();
+        this.controlPanel= controller.getControlPanel();
 
         frame.addKeyListener(controller);
 
@@ -82,56 +81,32 @@ public class GraphBuilderFrame implements ActionListener {
         //and add the buttons to the panel
         GridBagConstraints c= new GridBagConstraints();
         c.insets= new Insets(0,3,0,3);
+
         c.gridx= 0;
-
-        JButton duplicateButton= new JButton("Duplicate");
-        duplicateButton.setActionCommand("duplicateButton");
-        duplicateButton.addActionListener(this);
-        duplicateButton.setFocusable(false);
-
-        panel.add(duplicateButton,c);
-
-        JButton newWindowButton= new JButton("New");
-        newWindowButton.setActionCommand("newWindowButton");
-        newWindowButton.addActionListener(this);
-        newWindowButton.setFocusable(false);
+        panel.add(makeButton("Duplicate", "duplicateButton"),c);
 
         c.gridx= 1;
-        panel.add(newWindowButton);
-
-        JButton clearButton= new JButton("Clear");
-        clearButton.setActionCommand("clearButton");
-        clearButton.addActionListener(this);
-        clearButton.setFocusable(false);
+        panel.add(makeButton("New", "newWindowButton"));
 
         c.gridx= 2;
-        panel.add(clearButton,c);
-
-        JButton saveButton= new JButton("Save");
-        saveButton.setActionCommand("saveButton");
-        saveButton.addActionListener(this);
-        saveButton.setFocusable(false);
+        panel.add(makeButton("Clear", "clearButton"),c);
 
         c.gridx= 3;
-        panel.add(saveButton,c);
-
-        JButton loadButton= new JButton("Load");
-        loadButton.setActionCommand("loadButton");
-        loadButton.addActionListener(this);
-        loadButton.setFocusable(false);
+        panel.add(makeButton("Save", "saveButton"),c);
 
         c.gridx= 4;
-        panel.add(loadButton,c);
-
-        JButton chromaticButton= new JButton("Chromatic Number");
-        chromaticButton.setActionCommand("chromaticButton");
-        chromaticButton.addActionListener(this);
-        chromaticButton.setFocusable(false);
-
-        c.gridx= 5;
-        panel.add(chromaticButton,c);
+        panel.add(makeButton("Load", "loadButton"),c);
 
         return panel;
+    }
+
+    private JButton makeButton(String text, String actionCommand){
+        JButton button= new JButton(text);
+        button.setActionCommand(actionCommand);
+        button.addActionListener(this);
+        button.setFocusable(false);
+
+        return button;
     }
 
     public void setVisible(boolean visible){
@@ -141,6 +116,7 @@ public class GraphBuilderFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command= e.getActionCommand();
+        boolean ctrl= (e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK;
 
         GraphBuilderFrame newFrame= null;
         if(command.equals("duplicateButton")){
@@ -154,10 +130,20 @@ public class GraphBuilderFrame implements ActionListener {
             controller.setGraph(graph);
         }
         else if(command.equals("saveButton")){
-            saveGraph();
+            if(ctrl){
+                saveGraph(new File("graph.txt"));
+            }
+            else{
+                saveGraph();
+            }
         }
         else if(command.equals("loadButton")){
-            loadGraph();
+            if(ctrl){
+                loadGraph(new File("graph.txt"));
+            }
+            else {
+                loadGraph();
+            }
         }
         else if(command.equals("chromaticButton")){
             System.out.println(graph.chromaticNumber());
@@ -180,18 +166,23 @@ public class GraphBuilderFrame implements ActionListener {
     }
 
     private void saveGraph(){
-        File file= chooseFile();
+        saveGraph(chooseFile());
+    }
 
+    private void saveGraph(File file){
         if(file == null) {
             return;
         }
         GraphWriter writer= new GraphWriter(file);
-        System.out.println(writer.writeGraph(graph));
-        System.out.println("Written");
+        writer.writeGraph(graph);
+        System.out.println("Written to "+file.getPath());
     }
 
     private void loadGraph(){
-        File file= chooseFile();
+        loadGraph(chooseFile());
+    }
+
+    private void loadGraph(File file){
         if(file == null){
             return;
         }

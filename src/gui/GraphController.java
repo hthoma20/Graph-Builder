@@ -5,6 +5,7 @@ import graph.Graph;
 import graph.Vertex;
 import util.LineSegment;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -19,12 +20,14 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
     private WorkingEdge workingEdge= null;
     private LineSegment removeSegment= null;
 
+    private int vRad= 10;
+
     private EditMode mode;
 
-    public GraphController(GraphPanel panel, ControlPanel controls){
-        this.panel= panel;
-        this.controls= controls;
-        this.graph= panel.getGraph();
+    public GraphController(Graph graph){
+        this.panel= new GraphPanel(this);
+        this.controls= new ControlPanel();
+        this.graph= graph;
 
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
@@ -52,9 +55,15 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        boolean ctrl= (e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK;
+
         switch(mode){
             case VERTEX:
-                addVertex(e.getX(),e.getY());
+                String label= "";
+                if(ctrl){
+                    label= getInput("Vertex label:");
+                }
+                addVertex(e.getX(),e.getY(), label);
                 break;
             case DRAG:
                 selectedVertex= null;
@@ -107,12 +116,9 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
     @Override
     public void actionPerformed(ActionEvent e) {
         String command= e.getActionCommand();
-        if(command.equals("colorCheckBox")){
-            panel.setDoColor(controls.colorCheckBoxChecked());
-            return;
-        }
-        if(command.equals("degreeCheckBox")){
-            panel.setShowDegrees(controls.degreeCheckBoxChecked());
+
+        if(command.endsWith("CheckBox")){
+            panel.repaint();
             return;
         }
 
@@ -125,6 +131,10 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         setMode(newMode);
     }
 
+    private String getInput(String prompt){
+        return JOptionPane.showInputDialog(panel, prompt);
+    }
+
     private void setMode(EditMode mode){
         this.mode= mode;
         controls.setSelectedMode(mode);
@@ -134,7 +144,6 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         if(selectedVertex == null) return;
         if(workingEdge == null){
             workingEdge= new WorkingEdge(selectedVertex,x,y);
-            panel.setWorkingEdge(workingEdge);
         }
         else{
             workingEdge.moveTo(x,y);
@@ -145,13 +154,11 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     private void removeWorkingEdge(){
         workingEdge= null;
-        panel.setWorkingEdge(null);
         panel.repaint();
     }
 
     private void initRemoveSegment(Point p1){
         this.removeSegment= new LineSegment(p1,p1);
-        panel.setRemoveSegment(removeSegment);
     }
 
     private void moveRemoveSegment(Point p2){
@@ -163,7 +170,6 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     private void removeRemoveSegment(){
         removeSegment= null;
-        panel.setRemoveSegment(null);
         panel.repaint();
     }
 
@@ -198,8 +204,8 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
         selectedVertex= vertexAt(x,y);
     }
 
-    private void addVertex(int x, int y){
-        graph.addVertex(new Vertex(x,y));
+    private void addVertex(int x, int y, String label){
+        graph.addVertex(new Vertex(x,y, label));
         panel.repaint();
     }
 
@@ -232,7 +238,7 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
      */
     private Vertex vertexAt(int x, int y){
         for(Vertex v : graph.getVertexSet()){
-            if(v.within(x,y,panel.getVRad())){
+            if(v.within(x,y,vRad)){
                 return v;
             }
         }
@@ -242,8 +248,55 @@ public class GraphController implements MouseListener, MouseMotionListener, KeyL
 
     public void setGraph(Graph graph) {
         this.graph = graph;
-        panel.setGraph(graph);
         panel.repaint();
+    }
+
+    /*
+    *
+    * Getters
+    */
+
+    public Graph getGraph(){
+        return graph;
+    }
+
+    public WorkingEdge getWorkingEdge() {
+        return workingEdge;
+    }
+
+    public LineSegment getRemoveSegment() {
+        return removeSegment;
+    }
+
+    public int getVRad() {
+        return vRad;
+    }
+
+    public GraphPanel getGraphPanel() {
+        return panel;
+    }
+
+    public ControlPanel getControlPanel() {
+        return controls;
+    }
+
+    /*
+    *
+    *
+    * Panel queries
+    *
+     */
+
+    public boolean showDegrees(){
+        return controls.checkBoxChecked("degreeCheckBox");
+    }
+
+    public boolean showLabels(){
+        return controls.checkBoxChecked("labelCheckBox");
+    }
+
+    public boolean doVertexColoring(){
+        return controls.checkBoxChecked("colorCheckBox");
     }
 
     public enum EditMode{

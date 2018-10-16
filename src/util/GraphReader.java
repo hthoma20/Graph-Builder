@@ -61,6 +61,10 @@ public class GraphReader {
             vertexes.add(v);
             graph.addVertex(v);
 
+            //if there are no edges, we are done
+            if(!scanner.hasNextLine()){
+                return graph;
+            }
             line= scanner.nextLine();
         }
 

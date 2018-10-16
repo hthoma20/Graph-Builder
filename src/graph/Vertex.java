@@ -3,17 +3,23 @@ package graph;
 public class Vertex {
     private int x;
     private int y;
+    private String label;
 
-    public Vertex(int x, int y){
+    public Vertex(int x, int y, String label){
         this.x= x;
         this.y= y;
+        this.label= label;
+    }
+
+    public Vertex(int x, int y){
+        this(x,y,"");
     }
 
     /**
      * @return a deep copy of this vertex
      */
     public Vertex copy(){
-        return new Vertex(this.x, this.y);
+        return new Vertex(this.x, this.y, new String(this.label));
     }
 
     public void moveTo(int x, int y){
@@ -46,5 +52,9 @@ public class Vertex {
 
     public int getY() {
         return y;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

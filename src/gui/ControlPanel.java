@@ -1,5 +1,9 @@
 package gui;
 
+import util.AbstractButtonGroup;
+import util.ButtonContainer;
+import util.ExclusiveButtonGroup;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -11,8 +15,7 @@ public class ControlPanel extends JPanel {
 
     private Map<GraphController.EditMode,JButton> modeButtonMap;
 
-    private JCheckBox colorCheckBox;
-    private JCheckBox degreeCheckBox;
+    private ButtonContainer checkBoxes;
 
     public ControlPanel(){
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
@@ -58,17 +61,35 @@ public class ControlPanel extends JPanel {
     private Box setupCheckBoxes(){
         Box box= new Box(BoxLayout.X_AXIS);
 
-        this.colorCheckBox= new JCheckBox("Vertex Coloring");
-        colorCheckBox.setActionCommand("colorCheckBox");
-        colorCheckBox.setFocusable(false);
+        AbstractButtonGroup checkBoxes= new AbstractButtonGroup();
+
+        JCheckBox colorCheckBox= makeCheckBox("Vertex Coloring", "colorCheckBox");
         box.add(colorCheckBox);
 
-        this.degreeCheckBox= new JCheckBox("Degrees");
-        degreeCheckBox.setActionCommand("degreeCheckBox");
-        degreeCheckBox.setFocusable(false);
+        JCheckBox degreeCheckBox= makeCheckBox("Degrees", "degreeCheckBox");
         box.add(degreeCheckBox);
 
+        JCheckBox labelCheckBox= makeCheckBox("Labels", "labelCheckBox");
+        box.add(labelCheckBox);
+
+        ExclusiveButtonGroup vertexCheckBoxes= new ExclusiveButtonGroup(true);
+        vertexCheckBoxes.add(degreeCheckBox);
+        vertexCheckBoxes.add(labelCheckBox);
+
+        checkBoxes.add(colorCheckBox);
+        checkBoxes.add(vertexCheckBoxes);
+
+        this.checkBoxes= checkBoxes;
+
         return box;
+    }
+
+    private JCheckBox makeCheckBox(String text, String actionCommand){
+        JCheckBox checkBox= new JCheckBox(text);
+        checkBox.setActionCommand(actionCommand);
+        checkBox.setFocusable(false);
+
+        return checkBox;
     }
 
     public void addActionListener(ActionListener listener){
@@ -76,8 +97,9 @@ public class ControlPanel extends JPanel {
             b.addActionListener(listener);
         }
 
-        colorCheckBox.addActionListener(listener);
-        degreeCheckBox.addActionListener(listener);
+        for(AbstractButton checkBox : checkBoxes.getButtons()){
+            checkBox.addActionListener(listener);
+        }
     }
 
     public void setSelectedMode(GraphController.EditMode mode){
@@ -96,11 +118,7 @@ public class ControlPanel extends JPanel {
         }
     }
 
-    public boolean colorCheckBoxChecked(){
-        return colorCheckBox.isSelected();
-    }
-
-    public boolean degreeCheckBoxChecked(){
-        return degreeCheckBox.isSelected();
+    public boolean checkBoxChecked(String actionCommand){
+        return checkBoxes.isSelected(actionCommand);
     }
 }

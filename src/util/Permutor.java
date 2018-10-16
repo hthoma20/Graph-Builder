@@ -1,33 +1,33 @@
 package util;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class Permutor <T> {
+public class Permutor<T> implements Iterable<List<T>>{
     private ArrayList<T> master;
+    private List<List<T>> permutations;
 
     public static void main(String[] args){
-        ArrayList<Character> chars= new ArrayList<Character>();
-
-        Permutor<Character> permutor= new Permutor<>(new HashSet(chars));
-
-        List<List<Character>> permutations= permutor.getPermutations();
-
-        for(List<Character> str : permutations){
-            for(Character ch : str){
-                System.out.print(ch);
-            }
-            System.out.println();
+        ArrayList<Integer> set= new ArrayList<>();
+        for(int i=0; i<11 ; i++){
+            set.add(i);
         }
 
-        System.out.println(permutations.size());
+        Permutor<Integer> permutor= new Permutor<>(set);
+
+        /*for(List<Integer> str : permutor){
+            for(Integer val : str){
+                System.out.print(val+",");
+            }
+            System.out.println();
+        }*/
+
+        System.out.println(permutor.size());
     }
 
-    public Permutor(Set<T> set){
+    public Permutor(Collection<T> set){
         this.master= new ArrayList<>(set);
+        this.permutations= getPermutations();
     }
 
     public List<List<T>> getPermutations(){
@@ -61,5 +61,14 @@ public class Permutor <T> {
         }
 
         return permutations;
+    }
+
+    public int size(){
+        return permutations.size();
+    }
+
+    @Override
+    public Iterator<List<T>> iterator() {
+        return permutations.iterator();
     }
 }
